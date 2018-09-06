@@ -81,4 +81,4 @@ ${CMAKE_CURRENT_SOURCE_DIR}/test/*.hpp
 ${CMAKE_CURRENT_SOURCE_DIR}/test/*.h)
 
 ADD_EXECUTABLE(dmcurltest ${DMCURLTEST_SOURCES})
-TARGET_LINK_LIBRARIES(dmcurltest dmcurl curl curlpp)
+TARGET_LINK_LIBRARIES(dmcurltest dmcurl libcurl curlpp)
