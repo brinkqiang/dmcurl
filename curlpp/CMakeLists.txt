@@ -1,6 +1,9 @@
 project(curlpp) 
 
+LINK_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../lib)
 
+SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../bin)
+SET(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../lib)
 # In response to CMake 3.0 generating warnings regarding policy CMP0042,
 # the OSX RPATH settings have been updated per recommendations found
 # in the CMake Wiki:
