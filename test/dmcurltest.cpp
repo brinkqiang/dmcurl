@@ -34,6 +34,8 @@
 #include <cstdio>
 #include <cstring>
 
+#include <dmos.h>
+
 #include <curlpp/cURLpp.hpp>
 #include <curlpp/Easy.hpp>
 #include <curlpp/Options.hpp>
