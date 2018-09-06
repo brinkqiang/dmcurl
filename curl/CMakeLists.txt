@@ -58,8 +58,8 @@ include_directories(${PROJECT_BINARY_DIR}/include/curl)
 include_directories( ${CURL_SOURCE_DIR}/include )
 
 option(BUILD_CURL_EXE "Set to ON to build cURL executable." ON)
-option(BUILD_CURL_TESTS "Set to ON to build cURL tests." ON)
-option(CURL_STATICLIB "Set to ON to build libcurl with static linking." OFF)
+option(BUILD_CURL_TESTS "Set to ON to build cURL tests." OFF)
+option(CURL_STATICLIB "Set to ON to build libcurl with static linking." ON)
 option(CURL_USE_ARES "Set to ON to enable c-ares support" OFF)
 # initialize CURL_LIBS
 set(CURL_LIBS "")
