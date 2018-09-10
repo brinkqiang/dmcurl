@@ -18,7 +18,7 @@ Copyright (c) 2013-2018 brinkqiang (brink.qiang@gmail.com)
 
 ## Intro
 dmcurl
-curl version: 7.29.0
+curl version: 7.61.0
 curlpp version: 0.81
 ## Contacts
 [![Join the chat](https://badges.gitter.im/brinkqiang/dmcurl/Lobby.svg)](https://gitter.im/brinkqiang/dmcurl)
