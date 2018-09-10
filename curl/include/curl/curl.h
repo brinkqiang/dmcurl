@@ -65,11 +65,10 @@
    included, since they can't co-exist without problems */
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#endif
 #else
 #include <unistd.h>
 #endif
-#endif
-
 /* HP-UX systems version 9, 10 and 11 lack sys/select.h and so does oldish
    libc5-based Linux systems. Only include it on systems that are known to
    require it! */
