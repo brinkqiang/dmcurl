@@ -47,6 +47,11 @@ include(CheckCCompilerFlag)
 
 project(CURL C)
 
+LINK_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../bin)
+
+SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../bin)
+SET(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../bin)
+
 message(WARNING "the curl cmake build system is poorly maintained. Be aware")
 
 file(READ ${CURL_SOURCE_DIR}/include/curl/curlver.h CURL_VERSION_H_CONTENTS)
@@ -79,7 +84,7 @@ option(BUILD_CURL_EXE "Set to ON to build curl executable." ON)
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 option(ENABLE_ARES "Set to ON to enable c-ares support" OFF)
 if(WIN32)
-  option(CURL_STATIC_CRT "Set to ON to build libcurl with static CRT on Windows (/MT)." OFF)
+  option(CURL_STATIC_CRT "Set to ON to build libcurl with static CRT on Windows (/MT)." ON)
   option(ENABLE_INET_PTON "Set to OFF to prevent usage of inet_pton when building against modern SDKs while still requiring compatibility with older Windows versions, such as Windows XP, Windows Server 2003 etc." ON)
 endif()
 
