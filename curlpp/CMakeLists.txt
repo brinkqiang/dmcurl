@@ -1,9 +1,9 @@
 project(curlpp) 
 
-LINK_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../lib)
+LINK_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../bin)
 
 SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../bin)
-SET(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../lib)
+SET(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../bin)
 # In response to CMake 3.0 generating warnings regarding policy CMP0042,
 # the OSX RPATH settings have been updated per recommendations found
 # in the CMake Wiki:
@@ -57,18 +57,27 @@ add_subdirectory(extras)
 
 # Documented at https://cmake.org/cmake/help/v3.0/module/FindCURL.html?highlight=curlpp
 # Seems simple.
+if(WIN32)
+   message(STATUS "Looking for CURL")
+   set(CURL_VERSION_STRING "7.61.1")
+   set(CURL_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/../curl/include")
+   set(CURL_LIBRARIES "libcurl")
 
-message(STATUS "Looking for CURL")
-include(FindCURL)
-find_package(CURL REQUIRED)
-
-if(CURL_FOUND)
-  message(STATUS "Found CURL version: ${CURL_VERSION_STRING}")
-  message(STATUS "Using CURL include dir(s): ${CURL_INCLUDE_DIRS}")
-  message(STATUS "Using CURL lib(s): ${CURL_LIBRARIES}")
+   message(STATUS "Found CURL version: ${CURL_VERSION_STRING}")
+   message(STATUS "Using CURL include dir(s): ${CURL_INCLUDE_DIRS}")
+   message(STATUS "Using CURL lib(s): ${CURL_LIBRARIES}")
 else()
-  message(FATAL_ERROR "Could not find CURL")
+    message(STATUS "Looking for CURL")
+    include(FindCURL)
+    find_package(CURL REQUIRED)
+
+    if(CURL_FOUND)
+        message(STATUS "Found CURL version: ${CURL_VERSION_STRING}")
+        message(STATUS "Using CURL include dir(s): ${CURL_INCLUDE_DIRS}")
+        message(STATUS "Using CURL lib(s): ${CURL_LIBRARIES}")
+    endif()
 endif()
+
 
 # All following targets should search these directories for headers
 include_directories( 
