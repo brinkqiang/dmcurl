@@ -214,7 +214,7 @@ curl_nroff_check()
 find_package(Perl)
 
 cmake_dependent_option(ENABLE_MANUAL "to provide the built-in manual"
-    ON "NROFF_USEFUL;PERL_FOUND"
+    OFF "NROFF_USEFUL;PERL_FOUND"
     OFF)
 
 if(NOT PERL_FOUND)
