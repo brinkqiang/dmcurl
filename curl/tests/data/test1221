@@ -1,4 +1,11 @@
 <testcase>
+<info>
+<keywords>
+build system
+source analysis
+</keywords>
+</info>
+
 #
 # Client-side
 <client>
@@ -17,7 +24,7 @@ none
 #
 # Verify data after the test has been "shot"
 <verify>
-<file1 name="log/stderr1221">
+<file1 name="log/stderr1221" mode="text">
 </file1>
 <file2 name="log/stdout1221">
 Testing curl_10char_object_name...
