@@ -4,6 +4,9 @@ LINK_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../bin)
 
 SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../bin)
 SET(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../bin)
+
+set(CURLPP_LIBS "")
+
 # In response to CMake 3.0 generating warnings regarding policy CMP0042,
 # the OSX RPATH settings have been updated per recommendations found
 # in the CMake Wiki:
@@ -123,3 +126,5 @@ install(TARGETS ${PROJECT_NAME} ${PROJECT_NAME}_static
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
+set(CURLPP_LIBS ${PROJECT_NAME})
+mark_as_advanced(${CURLPP_LIBS})
