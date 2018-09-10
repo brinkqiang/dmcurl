@@ -65,6 +65,8 @@
    included, since they can't co-exist without problems */
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#else
+#include <unistd.h>
 #endif
 #endif
 
