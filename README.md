@@ -20,7 +20,7 @@ Copyright (c) 2013-2018 brinkqiang (brink.qiang@gmail.com)
 dmcurl
 curl version: 7.61.0
 curlpp version: 0.81
-```
+```cpp
 #include <sstream>
 
 #include <cstdlib>
