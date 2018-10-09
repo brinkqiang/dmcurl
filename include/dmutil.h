@@ -1,5 +1,5 @@
 
-// Copyright (c) 2018 brinkqiang
+// Copyright (c) 2018 brinkqiang (brink.qiang@gmail.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -88,7 +88,7 @@ static inline time_t DMFormatDateTime( const std::string& strTime,
     return ret;
 }
 
-static bool DMDirectoryExist( const char* dir_name ) {
+static bool DMIsDirectory( const char* dir_name ) {
 #ifdef WIN32
     int ret = GetFileAttributesA( dir_name );
 
@@ -109,87 +109,39 @@ static bool DMDirectoryExist( const char* dir_name ) {
 #endif
 }
 
-static inline bool DMDirectoryCreate( const char* dir_name, bool force ) {
-
+static inline bool DMCreateDirectory(const char* dir_name) {
 #ifdef WIN32
-    int ret = mkdir( dir_name );
+    int ret = mkdir(dir_name);
 #else
-    int ret = mkdir( dir_name, S_IRWXU | S_IRWXG );
+    int ret = mkdir(dir_name, S_IRWXU | S_IRWXG | S_IXOTH);
 #endif
 
-    if ( !force ) {
-        if ( 0 != ret ) {
-            return false;
-        }
-
-        return true;
-    }
-
-    if ( 0 != ret ) {
-        if ( force ) {
-            char path[MAX_PATH];
-            char* pos = path;
-            strncpy( path, dir_name, sizeof( path ) );
-            char* end = path + strlen( path );
-
-            while ( *pos != '\0' ) {
-                if ( PATH_IS_DELIMITER( *pos ) ) {
-                    *pos = '\0';
-                }
-
-                ++pos;
-            }
-
-            pos = path;
-            bool bfirst = true;
-
-            while ( pos < end ) {
-                if ( bfirst ) {
-                    bool isdrive = false;
-                    char* p = pos;
-
-                    while ( *p != '\0' ) {
-                        if ( *p == ':' ) {
-                            isdrive = true;
-                        }
-
-                        ++p;
-                    }
-
-                    if ( isdrive ) {
-                        pos = path + strlen( path );
-                        *pos = PATH_DELIMITER;
-                        bfirst = false;
-                        continue;
-                    }
-
-                    bfirst = false;
-                }
-
-                if ( !DMDirectoryExist( path ) ) {
-#ifdef WIN32
-
-                    if ( 0 != mkdir( path ) )
-#else
-                    if ( 0 != mkdir( path, S_IREAD | S_IWRITE ) )
-#endif
-                    {
-                        return false;
-                    }
-                }
-
-                pos = path + strlen( path );
-                *pos = PATH_DELIMITER;
-            }
-        }
-        else { //bforce == false
-            return false;
-        }
+    if (0 != ret) {
+        return false;
     }
 
     return true;
 }
 
+static inline bool DMCreateDirectories(const char* dir_name){
+    if (access(dir_name, 0) == 0){
+        if (DMIsDirectory(dir_name)){
+            return true;
+        }
+        return false;
+    }
+
+    char path[MAX_PATH];
+    strncpy(path, dir_name, sizeof(path));
+
+    char* p = strrchr(path, PATH_DELIMITER);
+    if (NULL == p){
+        return DMCreateDirectory(path);
+    }
+    *(p) = '\0';
+    DMCreateDirectories(path);
+    return DMCreateDirectory(dir_name);
+}
 
 static std::string DMGetRootPath() {
 #ifdef WIN32

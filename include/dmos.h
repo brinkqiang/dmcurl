@@ -1,5 +1,5 @@
 
-// Copyright (c) 2018 brinkqiang
+// Copyright (c) 2018 brinkqiang (brink.qiang@gmail.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -63,6 +63,7 @@
 #include <direct.h>
 #include <process.h>
 #include <conio.h>
+#include <io.h>
 
 #pragma comment(lib, "ws2_32.lib")
 
@@ -140,5 +141,15 @@ using namespace stdext;
 #define PATH_DELIMITER_STR "/"
 #endif
 #define DMASSERT assert
+
+#ifdef WIN32
+#define DMAPI __stdcall
+typedef HANDLE DMHANDLE;
+#define DMINVALID_HANDLE  NULL
+#else
+#define DMAPI
+typedef int DMHANDLE;
+#define DMINVALID_HANDLE  0
+#endif
 
 #endif // __DMOS_H_INCLUDE__
