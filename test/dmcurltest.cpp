@@ -1,61 +1,59 @@
 
-#include <sstream>
+#include "dmos.h"
+
+#include "dmformat.h"
+
 
 #include <cstdlib>
-#include <cstdio>
-#include <cstring>
-
-#include "dmos.h"
 
 #include <curlpp/cURLpp.hpp>
 #include <curlpp/Easy.hpp>
 #include <curlpp/Options.hpp>
 #include <curlpp/Exception.hpp>
-
-#include "dmformat.h"
+#include <curlpp/Infos.hpp>
+ 
 
 int main(int argc, char *argv[])
 {
-    if (argc != 3)
-    {
-        std::cerr << "Example 2: Missing argument" << std::endl
-            << "Example 2: Usage: example02 url string-to-send"
-            << std::endl;
-        return EXIT_FAILURE;
-    }
-    char *url = argv[1];
 
-    std::istringstream myStream(argv[2]);
-    int size = myStream.str().size();
+    std::string url = "https://api.github.com/users/brinkqiang/repos";
 
-    try
-    {
-        curlpp::Cleanup cleaner;
-        curlpp::Easy request;
+	try 
+	{
+		curlpp::Cleanup cleaner;
+		curlpp::Easy request;
 
-        std::list<std::string> headers;
-        headers.push_back("Content-Type: text/*");
-        std::string strBuf = fmt::format("Content-Length: {}", size);
-        headers.push_back(strBuf);
+		using namespace curlpp::Options;
+		request.setOpt(Verbose(true));
+		request.setOpt(Url(url));
 
-        using namespace curlpp::Options;
-        request.setOpt(new Verbose(true));
-        request.setOpt(new ReadStream(&myStream));
-        request.setOpt(new InfileSize(size));
-        request.setOpt(new Upload(true));
-        request.setOpt(new HttpHeader(headers));
-        request.setOpt(new Url(url));
+		request.perform();
 
-        request.perform();
-    }
-    catch (curlpp::LogicError &e)
-    {
-        std::cout << e.what() << std::endl;
-    }
-    catch (curlpp::RuntimeError &e)
-    {
-        std::cout << e.what() << std::endl;
-    }
+		std::string effURL;
+		curlpp::infos::EffectiveUrl::get(request, effURL);
+		std::cout << "Effective URL: " << effURL << std::endl;
 
-    return 0;
+		//other way to retreive URL
+		std::cout << std::endl 
+			<< "Effective URL: " 
+			<< curlpp::infos::EffectiveUrl::get(request)
+			<< std::endl;
+
+		std::cout << "Response code: " 
+			<< curlpp::infos::ResponseCode::get(request) 
+			<< std::endl;
+
+		std::cout << "SSL engines: " 
+			<< curlpp::infos::SslEngines::get(request)
+			<< std::endl;
+	}
+	catch ( curlpp::LogicError & e ) {
+		std::cout << e.what() << std::endl;
+	}
+	catch ( curlpp::RuntimeError & e ) {
+		std::cout << e.what() << std::endl;
+	}
+
+	return 0;
 }
+
