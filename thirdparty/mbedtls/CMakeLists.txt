@@ -1,15 +1,15 @@
 cmake_minimum_required(VERSION 2.6)
 project("mbed TLS" C)
 
-LINK_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/bin)
+LINK_DIRECTORIES(${CMAKE_SOURCE_DIR}/bin)
 
-SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/bin)
-SET(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
+SET(LIBRARY_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
 
 option(USE_PKCS11_HELPER_LIBRARY "Build mbed TLS with the pkcs11-helper library." OFF)
 option(ENABLE_ZLIB_SUPPORT "Build mbed TLS with zlib library." OFF)
 
-option(ENABLE_PROGRAMS "Build mbed TLS programs." ON)
+option(ENABLE_PROGRAMS "Build mbed TLS programs." OFF)
 
 option(UNSAFE_BUILD "Allow unsafe builds. These builds ARE NOT SECURE." OFF)
 
@@ -17,7 +17,7 @@ option(UNSAFE_BUILD "Allow unsafe builds. These builds ARE NOT SECURE." OFF)
 if(MSVC)
     option(ENABLE_TESTING "Build mbed TLS tests." OFF)
 else()
-    option(ENABLE_TESTING "Build mbed TLS tests." ON)
+    option(ENABLE_TESTING "Build mbed TLS tests." OFF)
 endif()
 
 # Warning string - created as a list for compatibility with CMake 2.8
