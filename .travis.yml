@@ -71,10 +71,10 @@ before_script:
     fi
 
 script:
-  - mkdir -p build && cd build
+  - mkdir -p build && pushd build
   - cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE
   - cmake --build .
-  - cd ..
+  - popd
 
 after_success:
   - "if [ -f bin/dmcurltest ] ; then bin/dmcurltest ; fi"
