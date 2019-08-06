@@ -47,11 +47,6 @@ include(CheckCCompilerFlag)
 
 project(CURL C)
 
-LINK_DIRECTORIES(${CMAKE_SOURCE_DIR}/bin)
-
-SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
-SET(LIBRARY_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
-
 message(WARNING "the curl cmake build system is poorly maintained. Be aware")
 
 file(READ ${CURL_SOURCE_DIR}/include/curl/curlver.h CURL_VERSION_H_CONTENTS)
