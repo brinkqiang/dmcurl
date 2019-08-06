@@ -23,7 +23,7 @@ addons:
     #   https://github.com/travis-ci/apt-package-whitelist/blob/master/ubuntu-trusty
     # List of whitelisted in travis apt-sources:
     #   https://github.com/travis-ci/apt-source-whitelist/blob/master/ubuntu.json
-    sources: ['ubuntu-toolchain-r-test']
+    sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-trusty-5.0']
     packages:
       - cmake
 #     - libtool
@@ -31,7 +31,7 @@ addons:
       - automake 
       - gcc-7
       - g++-7
-#     - clang-5.0
+      - clang-5.0
 
 
 install:
