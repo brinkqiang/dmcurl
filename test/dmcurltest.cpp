@@ -16,7 +16,7 @@
 int main(int argc, char *argv[])
 {
 
-    std::string url = "http://www.ip138.com";
+    std::string url = "https://api.github.com/users/brinkqiang/repos";
 
 	try 
 	{
