@@ -1,10 +1,5 @@
 project(curlpp) 
 
-LINK_DIRECTORIES(${CMAKE_SOURCE_DIR}/bin)
-
-SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
-SET(LIBRARY_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
-
 set(CURLPP_LIBS "")
 
 # In response to CMake 3.0 generating warnings regarding policy CMP0042,
