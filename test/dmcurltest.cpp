@@ -1,11 +1,7 @@
 
-#include "dmos.h"
-
 #include "dmformat.h"
 
-
 #include <cstdlib>
-
 #include <curlpp/cURLpp.hpp>
 #include <curlpp/Easy.hpp>
 #include <curlpp/Options.hpp>
