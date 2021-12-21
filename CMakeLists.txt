@@ -16,7 +16,7 @@ MESSAGE(STATUS "VERSION: ${DMCURL_VERSION}")
 
 ADD_DEFINITIONS(-DUSE_DMCURL)
 ADD_DEFINITIONS(-DNOMINMAX)
-
+ModuleInclude("dmformat" "thirdparty/dmformat")
 ModuleImport("mbedtls" "thirdparty/mbedtls")
 ModuleImport("curl" "thirdparty/curl")
 ModuleImport("curlpp" "thirdparty/curlpp")

@@ -36,7 +36,7 @@
 #include <limits>
 #include <memory>
 #include <stdexcept>
-#include "dmtypes.h"
+#include <cstdint>
 
 #ifdef __clang__
 # define FMT_CLANG_VERSION (__clang_major__ * 100 + __clang_minor__)
@@ -1513,10 +1513,7 @@ class arg_formatter_base {
   };
 
   void write_char(char_type value) {
-    char_writer tmp;
-	tmp.value = value;
-
-	writer_.write_padded(1, specs_, tmp);
+    writer_.write_padded(1, specs_, char_writer{value});
   }
 
   void write_pointer(const void *p) {
@@ -2356,7 +2353,7 @@ class system_error : public std::runtime_error {
   template <typename... Args>
   system_error(int error_code, string_view message, const Args & ... args)
     : std::runtime_error("") {
-    init(error_code, message, make_format_args(args...));
+    init(error_code, message, fmt::make_format_args(args...));
   }
 
   int error_code() const { return error_code_; }
@@ -2421,12 +2418,6 @@ class basic_writer {
     std::size_t padding;
     F f;
 
-	padded_int_writer(string_view _prefix, char_type _fill, std::size_t _padding, F _f)
-		: prefix(_prefix), fill(_fill), padding(_padding), f(_f)
-	{
-	}
-
-
     template <typename It>
     void operator()(It &&it) const {
       if (prefix.size() != 0)
@@ -2458,9 +2449,7 @@ class basic_writer {
     align_spec as = spec;
     if (spec.align() == ALIGN_DEFAULT)
       as.align_ = ALIGN_RIGHT;
-
-	padded_int_writer<F> tmp(prefix, fill, padding, f);
-	write_padded(size, as, tmp);
+    write_padded(size, as, padded_int_writer<F>{prefix, fill, padding, f});
   }
 
   // Writes a decimal integer.
@@ -2527,23 +2516,13 @@ class basic_writer {
 
     void on_dec() {
       unsigned num_digits = internal::count_digits(abs_value);
-
-	  dec_writer tmp;
-	  tmp.abs_value = abs_value;
-	  tmp.num_digits = num_digits;
-
-      writer.write_int(num_digits, get_prefix(), spec, tmp);
+      writer.write_int(num_digits, get_prefix(), spec,
+                       dec_writer{abs_value, num_digits});
     }
 
     struct hex_writer {
       int_writer &self;
       unsigned num_digits;
-
-	  hex_writer(int_writer &_self, unsigned _num_digits)
-		  : self(_self), num_digits(_num_digits)
-	  {
-
-	  }
 
       template <typename It>
       void operator()(It &&it) const {
@@ -2579,12 +2558,8 @@ class basic_writer {
         prefix[prefix_size++] = static_cast<char>(spec.type());
       }
       unsigned num_digits = count_digits<1>();
-
-	  bin_writer<1> tmp;
-      tmp.abs_value = abs_value;
-      tmp.num_digits = num_digits;
-
-      writer.write_int(num_digits, get_prefix(), spec, tmp);
+      writer.write_int(num_digits, get_prefix(), spec,
+                       bin_writer<1>{abs_value, num_digits});
     }
 
     void on_oct() {
@@ -2595,13 +2570,8 @@ class basic_writer {
         // is not greater than the number of digits.
         prefix[prefix_size++] = '0';
       }
-
-	  bin_writer<3> tmp;
-	  tmp.abs_value = abs_value;
-	  tmp.num_digits = num_digits;
-
       writer.write_int(num_digits, get_prefix(), spec,
-		  tmp);
+                       bin_writer<3>{abs_value, num_digits});
     }
 
     enum { SEP_SIZE = 1 };
@@ -2623,13 +2593,8 @@ class basic_writer {
       unsigned num_digits = internal::count_digits(abs_value);
       char_type sep = internal::thousands_sep<char_type>(writer.locale_.get());
       unsigned size = num_digits + SEP_SIZE * ((num_digits - 1) / 3);
-
-      num_writer tmp;
-	  tmp.abs_value = abs_value;
-	  tmp.size = size;
-	  tmp.sep = sep;
-
-      writer.write_int(size, get_prefix(), spec, tmp);
+      writer.write_int(size, get_prefix(), spec,
+                       num_writer{abs_value, size, sep});
     }
 
     void on_error() {
@@ -2663,12 +2628,6 @@ class basic_writer {
     char sign;
     basic_memory_buffer<char_type> &buffer;
 
-	double_writer(size_t _n, char _sign, basic_memory_buffer<char_type> &_buffer)
-		: n(_n), sign(_sign), buffer(_buffer)
-	{
-
-	}
-
     template <typename It>
     void operator()(It &&it) {
       if (sign) {
@@ -2700,10 +2659,7 @@ class basic_writer {
   // Writes a formatted string.
   template <typename Char>
   void write_str(const Char *s, std::size_t size, const align_spec &spec) {
-    str_writer<Char> tmp;
-	tmp.s = s;
-	tmp.size = size;
-	write_padded(size, spec, tmp);
+    write_padded(size, spec, str_writer<Char>{s, size});
   }
 
   template <typename Char>
@@ -2897,10 +2853,8 @@ void basic_writer<Range>::write_double(T value, const format_specs &spec) {
     format_specs spec;
     char sign;
     void operator()(const char *str) const {
-      inf_or_nan_writer tmp;
-	  tmp.sign = sign;
-	  tmp.str = str;
-      writer.write_padded(INF_SIZE + (sign ? 1 : 0), spec, tmp);
+      writer.write_padded(INF_SIZE + (sign ? 1 : 0), spec,
+                          inf_or_nan_writer{sign, str});
     }
   } write_inf_or_nan = {*this, spec, sign};
 
@@ -2961,9 +2915,7 @@ void basic_writer<Range>::write_double(T value, const format_specs &spec) {
     if (sign)
       ++n;
   }
-
-  double_writer tmp(n, sign, buffer);
-  write_padded(n, as, tmp);
+  write_padded(n, as, double_writer{n, sign, buffer});
 }
 
 template <typename Range>
@@ -3055,7 +3007,7 @@ class windows_error : public system_error {
   */
   template <typename... Args>
   windows_error(int error_code, string_view message, const Args & ... args) {
-    init(error_code, message, make_format_args(args...));
+    init(error_code, message, fmt::make_format_args(args...));
   }
 };
 
@@ -3576,14 +3528,14 @@ template <typename... Args, std::size_t SIZE = inline_buffer_size>
 inline format_context::iterator format_to(
     basic_memory_buffer<char, SIZE> &buf, string_view format_str,
     const Args & ... args) {
-  return vformat_to(buf, format_str, make_format_args(args...));
+  return vformat_to(buf, format_str, fmt::make_format_args(args...));
 }
 
 template <typename... Args, std::size_t SIZE = inline_buffer_size>
 inline wformat_context::iterator format_to(
     basic_memory_buffer<wchar_t, SIZE> &buf, wstring_view format_str,
     const Args & ... args) {
-  return vformat_to(buf, format_str, make_format_args<wformat_context>(args...));
+  return vformat_to(buf, format_str, fmt::make_format_args<wformat_context>(args...));
 }
 
 template <typename OutputIt, typename Char = char>
@@ -3626,7 +3578,7 @@ template <typename OutputIt, typename... Args>
 inline OutputIt format_to(OutputIt out, string_view format_str,
                           const Args & ... args) {
   return vformat_to(out, format_str,
-      make_format_args<typename format_context_t<OutputIt>::type>(args...));
+      fmt::make_format_args<typename format_context_t<OutputIt>::type>(args...));
 }
 
 template <typename Container, typename... Args>
@@ -3634,7 +3586,7 @@ inline typename std::enable_if<
   is_contiguous<Container>::value, std::back_insert_iterator<Container>>::type
     format_to(std::back_insert_iterator<Container> out,
               string_view format_str, const Args & ... args) {
-  return vformat_to(out, format_str, make_format_args<format_context>(args...));
+  return vformat_to(out, format_str, fmt::make_format_args<format_context>(args...));
 }
 
 template <typename Container, typename... Args>
@@ -3642,7 +3594,7 @@ inline typename std::enable_if<
   is_contiguous<Container>::value, std::back_insert_iterator<Container>>::type
     format_to(std::back_insert_iterator<Container> out,
               wstring_view format_str, const Args & ... args) {
-  return vformat_to(out, format_str, make_format_args<wformat_context>(args...));
+  return vformat_to(out, format_str, fmt::make_format_args<wformat_context>(args...));
 }
 
 template <typename OutputIt>
@@ -3693,7 +3645,7 @@ inline format_to_n_result<OutputIt> format_to_n(
     OutputIt out, std::size_t n, wstring_view format_str, const Args &... args) {
   typedef internal::truncating_iterator<OutputIt> It;
   auto it = vformat_to(It(out, n), format_str,
-      make_format_args<typename format_context_t<It, wchar_t>::type>(args...));
+      fmt::make_format_args<typename format_context_t<It, wchar_t>::type>(args...));
   return {it.base(), it.count()};
 }
 
@@ -3714,14 +3666,14 @@ inline typename std::enable_if<
   internal::is_format_string<String>::value, std::string>::type
     format(String format_str, const Args & ... args) {
   internal::check_format_string<Args...>(format_str);
-  return vformat(format_str.data(), make_format_args(args...));
+  return vformat(format_str.data(), fmt::make_format_args(args...));
 }
 
 template <typename String, typename... Args>
 inline typename std::enable_if<internal::is_format_string<String>::value>::type
     print(String format_str, const Args & ... args) {
   internal::check_format_string<Args...>(format_str);
-  return vprint(format_str.data(), make_format_args(args...));
+  return vprint(format_str.data(), fmt::make_format_args(args...));
 }
 
 /**
@@ -3909,7 +3861,7 @@ void vprint_rgb(rgb fd, rgb bg, string_view format, format_args args);
  */
 template <typename... Args>
 inline void print(rgb fd, string_view format_str, const Args & ... args) {
-  vprint_rgb(fd, format_str, make_format_args(args...));
+  vprint_rgb(fd, format_str, fmt::make_format_args(args...));
 }
 
 /**
@@ -3920,7 +3872,7 @@ inline void print(rgb fd, string_view format_str, const Args & ... args) {
  */
 template <typename... Args>
 inline void print(rgb fd, rgb bg, string_view format_str, const Args & ... args) {
-  vprint_rgb(fd, bg, format_str, make_format_args(args...));
+  vprint_rgb(fd, bg, format_str, fmt::make_format_args(args...));
 }
 #endif  // FMT_EXTENDED_COLORS
 

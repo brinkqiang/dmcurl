@@ -19,18 +19,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef __DMTYPES_H_INCLUDE__
-#define __DMTYPES_H_INCLUDE__
+#ifndef __DMCURL_H_INCLUDE__
+#define __DMCURL_H_INCLUDE__
 
-#ifdef _MSC_VER
-#include "msinttypes/stdint.h"
-#include "msinttypes/inttypes.h"
-#else
-// Other compilers should have this.
 #include <stdint.h>
-#include <inttypes.h>
-#include <sys/time.h>
 
-#endif
-
-#endif // __DMTYPES_H_INCLUDE__
+#endif // __DMCURL_H_INCLUDE__

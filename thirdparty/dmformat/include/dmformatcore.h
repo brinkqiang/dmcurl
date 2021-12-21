@@ -376,7 +376,7 @@ class basic_buffer {
     reserve(new_size);
     size_ = new_size;
   }
-
+  void clear() { size_ = 0; }
   /** Reserves space to store at least *capacity* elements. */
   void reserve(std::size_t new_capacity) {
     if (new_capacity > capacity_)
@@ -682,8 +682,7 @@ struct result_of;
 template <typename F, typename... Args>
 struct result_of<F(Args...)> {
   // A workaround for gcc 4.4 that doesn't allow F to be a reference.
-  typedef typename std::result_of<
-    typename std::remove_reference<F>::type(Args...)>::type type;
+    typedef typename std::invoke_result<F, Args...>::type type;
 };
 }
 
@@ -1203,12 +1202,12 @@ FMT_API void vprint_colored(color c, wstring_view format, wformat_args args);
 template <typename... Args>
 inline void print_colored(color c, string_view format_str,
                           const Args & ... args) {
-  vprint_colored(c, format_str, make_format_args(args...));
+  vprint_colored(c, format_str, fmt::make_format_args(args...));
 }
 template <typename... Args>
 inline void print_colored(color c, wstring_view format_str,
                           const Args & ... args) {
-  vprint_colored(c, format_str, make_format_args<wformat_context>(args...));
+  vprint_colored(c, format_str, fmt::make_format_args<wformat_context>(args...));
 }
 #endif
 
@@ -1265,7 +1264,7 @@ std::wstring vformat(wstring_view format_str, wformat_args args);
 template <typename... Args>
 inline std::string format(string_view format_str, const Args & ... args) {
   // This should be just
-  // return vformat(format_str, make_format_args(args...));
+  // return vformat(format_str, fmt::make_format_args(args...));
   // but gcc has trouble optimizing the latter, so break it down.
   format_arg_store<format_context, Args...> as{args...};
   return vformat(format_str, as);
