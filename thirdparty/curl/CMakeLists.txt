@@ -47,6 +47,37 @@ include(CheckCCompilerFlag)
 
 project(CURL C)
 
+## openwrt start
+if(NOT WIN32)
+
+  # 使用 uname 命令获取操作系统名称
+  execute_process(
+    COMMAND uname -a
+    OUTPUT_VARIABLE UNAME_OUTPUT
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+
+  # 检查输出中是否包含 "OpenWrt"
+  if (UNAME_OUTPUT MATCHES "OpenWrt")
+    message(STATUS "System is OpenWRT")
+    set(IS_OPENWRT 1)
+  else ()
+    message(STATUS "System is not OpenWRT")
+    set(IS_OPENWRT 0)
+  endif ()
+
+  if (IS_OPENWRT)
+    set(CMAKE_THREAD_LIBS_INIT "-lpthread")
+    set(CMAKE_HAVE_THREADS_LIBRARY 1)
+    set(CMAKE_USE_WIN32_THREADS_INIT 0)
+    set(CMAKE_USE_PTHREADS_INIT 1)
+    set(THREADS_PREFER_PTHREAD_FLAG ON)
+  endif()
+else ()
+  set(IS_OPENWRT 0)
+endif ()
+## openwrt end
+
 message(WARNING "the curl cmake build system is poorly maintained. Be aware")
 
 file(READ ${CURL_SOURCE_DIR}/include/curl/curlver.h CURL_VERSION_H_CONTENTS)
@@ -1097,7 +1128,10 @@ endif()
 set(CURL_PULL_STDINT_H ${HAVE_STDINT_H})
 set(CURL_PULL_INTTYPES_H ${HAVE_INTTYPES_H})
 
-include(CMake/OtherTests.cmake)
+# openwrt remove include(CMake/OtherTests.cmake)
+IF(NOT IS_OPENWRT)
+  include(CMake/OtherTests.cmake)
+ENDIF()
 
 add_definitions(-DHAVE_CONFIG_H)
 
