@@ -22,6 +22,8 @@ int main(int argc, char *argv[])
 		using namespace curlpp::Options;
 		request.setOpt(Verbose(true));
 		request.setOpt(Url(url));
+		request.setOpt(curlpp::Options::SslVerifyPeer(false));
+		request.setOpt(curlpp::Options::SslVerifyHost(0));
 
 		request.perform();
 
@@ -52,4 +54,3 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
-
