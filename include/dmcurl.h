@@ -22,6 +22,6 @@
 #ifndef __DMCURL_H_INCLUDE__
 #define __DMCURL_H_INCLUDE__
 
-#include <stdint.h>
+#include <curlpp/cURLpp.hpp>
 
 #endif // __DMCURL_H_INCLUDE__
